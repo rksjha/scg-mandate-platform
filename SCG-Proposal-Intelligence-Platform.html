@@ -880,37 +880,37 @@ textarea { resize: vertical; min-height: 80px; }
     <div class="val">mandate.msmeintelligence.in</div>
   </div>
   <div class="info-item">
-    <label>Parent Domain</label>
-    <div class="val">msmeintelligence.in</div>
+    <label>Primary Storage</label>
+    <div class="val">Google Drive (Workspace)</div>
   </div>
   <div class="info-item">
     <label>Data Format</label>
-    <div class="val">JSON / Webhook</div>
+    <div class="val">JSON / Apps Script Webhook</div>
   </div>
   <div class="info-item">
-    <label>CRM / ERP Status</label>
+    <label>Cloud Sync Status</label>
     <div class="val" id="integration-status-badge">⏳ Not Configured</div>
   </div>
 </div>
 
 <div class="card">
-  <div class="card-header"><h2>Webhook & CRM/ERP Integration Config</h2><span class="badge">Future-Ready</span></div>
+  <div class="card-header"><h2>Google Workspace & CRM Integration Config</h2><span class="badge">Drive Sync</span></div>
   <div class="card-body">
-    <div class="section-intro">Configure the webhook endpoint where mandate data will be automatically POSTed in JSON format to your CRM / ERP system. All mandates generated will send structured data to this endpoint upon clicking "Generate Mandate".</div>
+    <div class="section-intro">Configure the Google Apps Script Webhook endpoint to automatically sync mandate data directly to your <strong>Google Drive</strong> for better mobility, central access, and ease of operations. You may also point this to a third-party CRM if required.</div>
     <div class="form-row col2">
       <div class="form-group">
-        <label>Webhook Endpoint URL (CRM / ERP)</label>
-        <input type="url" id="webhook-url" placeholder="https://crm.msmeintelligence.in/api/mandates" oninput="saveIntegrationConfig()">
+        <label>Apps Script Webhook URL (Google Drive / CRM)</label>
+        <input type="url" id="webhook-url" placeholder="https://script.google.com/macros/s/.../exec" oninput="saveIntegrationConfig()">
       </div>
       <div class="form-group">
-        <label>API Key / Bearer Token</label>
-        <input type="password" id="webhook-key" placeholder="Enter API key or bearer token" oninput="saveIntegrationConfig()">
+        <label>API Key / Access Token</label>
+        <input type="password" id="webhook-key" placeholder="Enter API key or bearer token (if required)" oninput="saveIntegrationConfig()">
       </div>
     </div>
     <div class="form-row col3">
       <div class="form-group">
-        <label>CRM System Name</label>
-        <input type="text" id="crm-name" placeholder="e.g. Zoho CRM / Custom ERP" oninput="saveIntegrationConfig()">
+        <label>Primary Storage / System Name</label>
+        <input type="text" id="crm-name" placeholder="e.g. SCG Google Drive Workspace" oninput="saveIntegrationConfig()">
       </div>
       <div class="form-group">
         <label>Auto-Send on Generate?</label>
@@ -1576,9 +1576,16 @@ function saveIntegrationConfig() {
 
 function loadIntegrationConfig() {
   try {
-    const raw = localStorage.getItem('scg_integration_cfg');
-    if (!raw) return;
-    const cfg = JSON.parse(raw);
+    let raw = localStorage.getItem('scg_integration_cfg');
+    let cfg = raw ? JSON.parse(raw) : {};
+    
+    if (!cfg.webhookUrl) {
+      cfg.webhookUrl = 'https://script.google.com/macros/s/AKfycbwGo80qUmydgSGE86ttshD0Q5eQ7m6adRDFIJNiH9BeILytm7qr4d-s26_uNiMeXPty/exec';
+      cfg.crmName = 'Google Drive Workspace';
+      cfg.autoSend = 'yes';
+      localStorage.setItem('scg_integration_cfg', JSON.stringify(cfg));
+    }
+
     if (cfg.webhookUrl) document.getElementById('webhook-url').value = cfg.webhookUrl;
     if (cfg.crmName)    document.getElementById('crm-name').value    = cfg.crmName;
     if (cfg.autoSend)   document.getElementById('auto-send').value   = cfg.autoSend;
